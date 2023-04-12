@@ -14,7 +14,7 @@ void ch_free_grid(char **gridpoint, unsigned int height)
 	if (gridpoint != NULL && height != 0)
 	{
 		for (; height > 0; height--)
-			free(gridpoint[height]);
+		free(gridpoint[height]);
 		free(gridpoint[height]);
 		free(gridpoint);
 	}
@@ -66,5 +66,5 @@ char **strtow(char *str)
 	}
 	result[i] = NULL;
 	return (result);
-} 
+}
 /*chris*/
