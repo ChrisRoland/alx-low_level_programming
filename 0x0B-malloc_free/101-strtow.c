@@ -1,98 +1,70 @@
-n.h"
+#include "main.h"
 #include <stdlib.h>
 
-void util(char **, char *);
-void create_word(char **, char *, int, int, int);
+/**
+ * ch_free_grid - frees a 2 dimensional array.
+ * @gridpoint: multidimensional array of char.
+ * @height: height of the array.
+ *
+ * Return: no return
+ */
+
+void ch_free_grid(char **gridpoint, unsigned int height)
+{
+	if (gridpoint != NULL && height != 0)
+	{
+		for (; height > 0; height--)
+			free(gridpoint[height]);
+		free(gridpoint[height]);
+		free(gridpoint);
+	}
+}
 
 /**
  * strtow - splits a string into words.
- * @str: the string
+ * @str: string.
  *
- * Return: returns a pointer to an array of strings (words)
+ * Return: pointer of an array of integers
  */
+
 char **strtow(char *str)
 {
-	int i, flag, len;
-	char **words;
+	char **result;
+	unsigned int c, height, i, j, a1;
 
-	if (str == NULL || str[0] == '\0' || (str[0] == ' ' && str[1] == '\0'))
+	if (str == NULL || *str == '\0')
 		return (NULL);
-
-	i = flag = len = 0;
-	while (str[i])
+	for (c = height = 0; str[c] != '\0'; c++)
+		if (str[c] != ' ' && (str[c + 1] == ' ' || str[c + 1] == '\0'))
+			height++;
+	result = malloc((height + 1) * sizeof(char *));
+	if (result == NULL || height == 0)
 	{
-		if (flag == 0 && str[i] != ' ')
-			flag = 1;
-		if (i > 0 && str[i] == ' ' && str[i - 1] != ' ')
-		{
-			flag = 0;
-			len++;
-		}
-		i++;
+		free(result);
+		return (NULL);
 	}
-
-	len += flag == 1 ? 1 : 0;
-	if (len == 0)
-		return (NULL);
-
-	words = (char **)malloc(sizeof(char *) * (len + 1));
-	if (words == NULL)
-		return (NULL);
-
-	util(words, str);
-	words[len] = NULL;
-	return (words);
-}
-
-/**
- * util - a util function for fetching words into an array
- * @words: the strings array
- * @str: the string
- */
-void util(char **words, char *str)
-{
-	int i, j, start, flag;
-
-	i = j = flag = 0;
-	while (str[i])
+	for (i = a1 = 0; i < height; i++)
 	{
-		if (flag == 0 && str[i] != ' ')
+		for (c = a1; str[c] != '\0'; c++)
 		{
-			start = i;
-			flag = 1;
+			if (str[c] == ' ')
+				a1++;
+			if (str[c] != ' ' && (str[c + 1] == ' ' || str[c + 1] == '\0'))
+			{
+				result[i] = malloc((c - a1 + 2) * sizeof(char));
+				if (result[i] == NULL)
+				{
+					ch_free_grid(result, i);
+					return (NULL);
+				}
+				break;
+			}
 		}
-
-		if (i > 0 && str[i] == ' ' && str[i - 1] != ' ')
-		{
-			create_word(words, str, start, i, j);
-			j++;
-			flag = 0;
-		}
-
-		i++;
+		for (j = 0; a1 <= c; a1++, j++)
+			result[i][j] = str[a1];
+		result[i][j] = '\0';
 	}
-
-	if (flag == 1)
-		create_word(words, str, start, i, j);
-}
-
-/**
- * create_word - creates a word and insert it into the array
- * @words: the array of strings
- * @str: the string
- * @start: the starting index of the word
- * @end: the stopping index of the word
- * @index: the index of the array to insert the word
- */
-void create_word(char **words, char *str, int start, int end, int index)
-{
-	int i, j;
-
-	i = end - start;
-	words[index] = (char *)malloc(sizeof(char) * (i + 1));
-
-	for (j = 0; start < end; start++, j++)
-		words[index][j] = str[start];
-	words[index][j] = '\0';
-}
+	result[i] = NULL;
+	return (result);
+} 
 /*chris*/
